@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<!--通过onload调用ready功能-->
+<body onload="ready()">
+
+
+<script>
+
+      function ready() {
+
+          //第一步：创建XMLHttpRequest()对象
+          var xmlhttp;
+
+
+          //考虑兼容性
+
+          if(window.XMLHttpRequest){
+             xmlhttp=new  XMLHttpRequest;
+
+          }else{
+
+              xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+
+          }
+
+          //第二步：通过open和send方法向服务器发送请求
+
+          xmlhttp.open("GET","http://localhost:8080/user?username=ahhh&password=qwe123&operation=1",true);
+          xmlhttp.send();
+
+
+          //第三步监听事件
+
+
+          xmlhttp.onreadystatechange=function(){
+            if (xmlhttp.readyState==4&&xmlhttp.status==200){
+
+             //    alert(xmlhttp.responseText);
+                var  obj=JSON.parse(xmlhttp.responseText);
+
+
+
+                alert(obj);
+            document.getElementById("data").innerHTML=obj.user_name;
+
+            }
+
+
+          }
+
+      }
+
+
+
+</script>
+<span id="data"></span>
+
+</body>
+</html>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+       Copyright 2009-2017 the original author or authors.
+
+       Licensed under the Apache License, Version 2.0 (the "License");
+       you may not use this file except in compliance with the License.
+       You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing, software
+       distributed under the License is distributed on an "AS IS" BASIS,
+       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       See the License for the specific language governing permissions and
+       limitations under the License.
+
+-->
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--//推荐写对应的dao层的包名加接口类名-->
+<mapper namespace="com.neuedu.Dao.ICartDao">
+
+
+    <select id="findCartByUserIdAndProductId" resultType="cart" parameterType="map">
+
+        SELECT * FROM neuedu_cart WHERE  user_id=#{user_id} AND  product_id =#{product_id}
+
+    </select>
+
+
+    <insert id="addProductToCart" parameterType="cart">
+        INSERT  INTO  neuedu_cart (user_id,quantity,checked,product_id,creat_time,update_time)
+         VALUES (#{user_id},#{quantity},#{checked},#{product_id},now(),now());
+
+
+    </insert>
+
+
+    <update id="updateCart" parameterType="cart" keyColumn="id" useGeneratedKeys="true">
+
+        UPDATE neuedu_cart SET  quantity=#{quantity} WHERE user_id =#{user_id} AND product_id=#{product_id}
+
+    </update>
+
+
+    <select id="findCartsByUserId" parameterType="int" resultType="cart">
+
+
+        SELECT  * FROM  neuedu_cart WHERE  user_id=#{user_id}
+
+    </select>
+
+
+    <select id="isCheckAll" resultType="int" parameterType="int">
+
+        select count(1) from  neuedu_cart WHERE user_id=#{user_id} AND checked=0 ;
+
+
+    </select>
+
+
+    <delete id="deleteProduct" parameterType="cart">
+        DELETE  FROM  neuedu_cart WHERE  user_id=#{user_id} AND  product_id=#{product_id}
+
+    </delete>
+
+    <update id="checkedProduct" parameterType="map">
+        UPDATE  neuedu_cart SET checked=1 WHERE  user_id=#{user_id} AND  product_id=#{product_id}
+    </update>
+
+    <update id="unCheckedProduct" parameterType="map">
+        UPDATE  neuedu_cart SET checked=0 WHERE  user_id=#{user_id} AND  product_id=#{product_id}
+    </update>
+
+
+    <select id="findCartsCheckedByUserId" parameterType="int" resultType="cart">
+        SELECT * FROM  neuedu_cart WHERE checked=1 AND  user_id=#{user_id}
+
+
+    </select>
+
+
+    <delete id="deleteCart" parameterType="map">
+        DELETE FROM neuedu_cart
+        <where>
+
+            user_id=#{user_id} AND product_id IN
+            <foreach collection="list" item="cart" separator="," open="(" close=")">
+                #{cart.product_id}
+
+
+            </foreach>
+
+        </where>
+
+    </delete>
+
+
+</mapper>

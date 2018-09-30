@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+       Copyright 2009-2017 the original author or authors.
+
+       Licensed under the Apache License, Version 2.0 (the "License");
+       you may not use this file except in compliance with the License.
+       You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+       Unless required by applicable law or agreed to in writing, software
+       distributed under the License is distributed on an "AS IS" BASIS,
+       WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+       See the License for the specific language governing permissions and
+       limitations under the License.
+
+-->
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--//推荐写对应的dao层的包名加接口类名-->
+<mapper namespace="com.neuedu.Dao.Category">
+
+
+
+      <resultMap id="categoryMap" type="category" autoMapping="true" >
+          <!--主键映射-->
+          <id column="categoryid" property="id" ></id>
+          <result column="categoryname" property="name" ></result>
+            
+         <!--一对多映射-->
+          <collection property="productList" column="categoryid" javaType="java.util.ArrayList" ofType="product" autoMapping="true">
+              <id column="productid" property="id"></id>
+              <result column="productname" property="name"></result>
+
+
+          </collection>
+
+
+
+      </resultMap>
+
+
+    <!--// id 推荐写对应的方法id     parameterType写需要传入的参数的类型   resultType可以写别名，也可以写-->
+    <select id="findProductByCategoryId" parameterType="int" resultMap="categoryMap">
+
+       SELECT p.id productid ,category_id,p.name productname,p.subtitle,p.detail,p.price,p.stock,p.status,
+               c.id categoryid,c.parent_id,c.name categoryname,c.status,c.sort_order
+
+       FROM  neuedu_product p
+
+       LEFT JOIN neuedu_category c
+
+       ON c.id=p.category_id
+       WHERE  category_id=#{category_id}
+
+    </select>
+
+
+
+    <select id="findCategorySubByCategoryId" parameterType="int" resultType="category">
+        SELECT  id,parent_id,name,status,sort_order,creat_time,update_time
+        FROM  neuedu_category
+        WHERE  parent_id=#{category_id};
+
+    </select>
+
+
+    <insert id="addCategory" parameterType="map" keyColumn="id" useGeneratedKeys="true"  >
+        INSERT  INTO neuedu_category (parent_id,name,status,sort_order,creat_time,update_time)
+        VALUES (#{parent_id},#{category_name},1,1,now(),now());
+
+    </insert>
+
+<select id="findCategoryByName" parameterType="string" resultType="int">
+        SELECT count(1)
+        FROM  neuedu_category
+        WHERE name=#{categoryName}
+
+</select>
+
+
+
+    <update id="updateCategoryNameById" parameterType="map" >
+        UPDATE neuedu_category SET name=#{newCategoryName} WHERE  id=#{categoryId}
+
+
+    </update>
+
+    <select id="findCategoryNameById" parameterType="integer" resultType="category">
+        SELECT * FROM neuedu_category WHERE  id=#{categoryId}
+
+
+    </select>
+
+</mapper>
